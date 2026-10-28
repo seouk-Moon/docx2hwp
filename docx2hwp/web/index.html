@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>docx2hwp — Word를 한글로</title>
+<meta name="description" content="Word(.docx) 문서를 한글(.hwpx) 문서로 바꿉니다. 수식은 편집 가능한 한글 수식으로 변환됩니다. 파일은 브라우저 밖으로 나가지 않습니다.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232457d6'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3E%ED%95%9C%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">한</span>
+    <div>
+      <h1>docx2hwp</h1>
+      <p>Word 문서를 한글 문서로 — 수식까지 그대로</p>
+    </div>
+  </div>
+  <div class="engine" id="engine" data-state="loading">
+    <span class="dot"></span><span id="engineText">변환 엔진 준비 중…</span>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="left">
+    <label class="drop" id="drop" tabindex="0">
+      <input type="file" id="picker" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
+      <svg class="drop-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 31V11m0 0-7 7m7-7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 29v6a4 4 0 0 0 4 4h22a4 4 0 0 0 4-4v-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+      <strong>.docx 파일을 여기에 끌어다 놓으세요</strong>
+      <span>또는 <u>클릭해서 고르기</u> · 여러 개 한꺼번에 가능</span>
+    </label>
+
+    <div class="list-head">
+      <h2>변환한 파일 <span id="count" class="muted"></span></h2>
+      <div class="list-actions">
+        <button class="btn ghost" id="clearBtn" disabled>목록 비우기</button>
+        <button class="btn primary" id="zipBtn" disabled>모두 받기 (.zip)</button>
+      </div>
+    </div>
+    <ul class="files" id="files">
+      <li class="empty" id="emptyRow">아직 변환한 파일이 없습니다.</li>
+    </ul>
+  </section>
+
+  <aside class="right">
+    <div class="panel" id="eqPanel">
+      <div class="panel-head">
+        <h2>수식 미리보기</h2>
+        <span class="muted" id="eqFile">파일을 고르면 한글 수식 스크립트가 여기 나옵니다</span>
+      </div>
+      <ol class="eqs" id="eqs"></ol>
+    </div>
+    <div class="panel tips">
+      <h2>알아두면 좋아요</h2>
+      <ul>
+        <li><b>파일은 서버로 올라가지 않습니다.</b> 변환은 전부 이 브라우저 안에서 이뤄집니다.</li>
+        <li>결과는 <b>.hwpx</b>입니다. 한글 2014 이상, 한글 뷰어, 한컴독스에서 열립니다. .hwp가 필요하면 한글에서 열어 다른 이름으로 저장하세요.</li>
+        <li>수식은 그림이 아니라 <b>편집 가능한 한글 수식</b>입니다. 한글에서 두 번 누르면 수식 편집기가 열립니다.</li>
+        <li>처음 열 때 변환 엔진(약 10MB)을 내려받느라 몇 초 걸립니다. 그다음부터는 빠릅니다.</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+
+<footer class="foot">
+  <span>본 제품은 한글과컴퓨터의 한글 문서 파일(.hwp) 공개 문서를 참고하여 개발하였습니다.</span>
+  <a href="https://github.com/seouk-Moon/docx2hwp" target="_blank" rel="noopener">GitHub</a>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

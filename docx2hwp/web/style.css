@@ -1,0 +1,197 @@
+:root {
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --ink: #18202f;
+  --muted: #6b7486;
+  --line: #e2e6ee;
+  --brand: #2457d6;
+  --brand-ink: #ffffff;
+  --brand-soft: #e8eefc;
+  --ok: #138a52;
+  --ok-soft: #e3f5ec;
+  --warn: #a35b00;
+  --warn-soft: #fff3df;
+  --err: #c0362c;
+  --err-soft: #fde8e6;
+  --code: #f3f5f9;
+  --shadow: 0 1px 2px rgba(20, 30, 60, .06), 0 4px 16px rgba(20, 30, 60, .06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11151d;
+    --card: #1a2030;
+    --ink: #e7ebf3;
+    --muted: #97a0b3;
+    --line: #2b3346;
+    --brand: #5b8bff;
+    --brand-ink: #0c1222;
+    --brand-soft: #1f2b4a;
+    --ok: #4fd18f;
+    --ok-soft: #173326;
+    --warn: #ffb547;
+    --warn-soft: #3a2b12;
+    --err: #ff7b70;
+    --err-soft: #3b1d1b;
+    --code: #141a27;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+h1, h2 { margin: 0; letter-spacing: -0.01em; }
+button { font: inherit; }
+.muted { color: var(--muted); font-weight: 400; }
+
+/* 상단 */
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 32px;
+  max-width: 1240px; width: 100%; margin: 0 auto;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--brand); color: var(--brand-ink);
+  display: grid; place-items: center; font-weight: 800; font-size: 20px;
+}
+.brand h1 { font-size: 20px; font-weight: 800; }
+.brand p { margin: 0; color: var(--muted); font-size: 13px; }
+.engine {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--card); border: 1px solid var(--line); font-size: 13px; color: var(--muted);
+}
+.engine .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+.engine[data-state="loading"] .dot { animation: pulse 1.2s infinite ease-in-out; }
+.engine[data-state="ready"] .dot { background: var(--ok); }
+.engine[data-state="error"] .dot { background: var(--err); }
+@keyframes pulse { 50% { opacity: .3; } }
+
+/* 본문 2단 */
+.layout {
+  flex: 1;
+  display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 24px;
+  padding: 8px 32px 32px; max-width: 1240px; width: 100%; margin: 0 auto;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; padding: 8px 16px 24px; }
+  .top { padding: 16px; }
+}
+
+/* 끌어다 놓기 */
+.drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  min-height: 210px; padding: 28px; text-align: center; cursor: pointer;
+  background: var(--card); border: 2px dashed var(--line); border-radius: 16px;
+  box-shadow: var(--shadow);
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.drop:hover, .drop:focus-visible { border-color: var(--brand); outline: none; }
+.drop.over { border-color: var(--brand); background: var(--brand-soft); transform: scale(1.005); }
+.drop.disabled { opacity: .6; cursor: progress; }
+.drop-ico { width: 46px; height: 46px; color: var(--brand); margin-bottom: 4px; }
+.drop strong { font-size: 17px; }
+.drop span { color: var(--muted); font-size: 14px; }
+
+/* 파일 목록 */
+.list-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 26px 2px 10px;
+}
+.list-head h2 { font-size: 16px; }
+.list-actions { display: flex; gap: 8px; }
+.files { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.files .empty {
+  padding: 22px; text-align: center; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+}
+.file {
+  display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center;
+  padding: 14px 16px; border-radius: 12px; background: var(--card);
+  border: 1px solid var(--line); box-shadow: var(--shadow); cursor: pointer;
+}
+.file.selected { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.file .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file .meta { grid-column: 1; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--muted); }
+.file .act { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 8px; align-items: center; }
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px 9px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--code); color: var(--muted);
+}
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.err { background: var(--err-soft); color: var(--err); }
+.pill.run { background: var(--brand-soft); color: var(--brand); }
+.file .warns {
+  grid-column: 1 / -1; margin: 4px 0 0; padding: 8px 12px; border-radius: 8px;
+  background: var(--warn-soft); color: var(--warn); font-size: 13px; list-style: none;
+}
+.file .warns li + li { margin-top: 2px; }
+
+/* 버튼 */
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;
+  transition: background .15s, border-color .15s, opacity .15s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { border-color: var(--brand); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 6px 12px; font-size: 13px; }
+
+/* 오른쪽 패널 */
+.right { display: grid; gap: 16px; position: sticky; top: 16px; }
+@media (max-width: 900px) { .right { position: static; } }
+.panel {
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  padding: 18px 18px 14px; box-shadow: var(--shadow);
+}
+.panel h2 { font-size: 16px; }
+.panel-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+.panel-head .muted { font-size: 13px; }
+.eqs { margin: 0; padding: 0; list-style: none; max-height: 46vh; overflow: auto; display: grid; gap: 8px; }
+.eqs li {
+  display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: start;
+  padding: 8px 10px; background: var(--code); border-radius: 10px;
+}
+.eqs .no { color: var(--muted); font-size: 12px; padding-top: 3px; text-align: right; }
+.eqs code {
+  font-family: ui-monospace, "D2Coding", "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 13px; word-break: break-all; white-space: pre-wrap;
+}
+.eqs .copy { padding: 2px 8px; font-size: 12px; border-radius: 7px; }
+.eqs .none { display: block; color: var(--muted); font-size: 13px; background: none; padding: 4px 0; }
+.tips ul { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; }
+.tips li + li { margin-top: 6px; }
+.tips b { color: var(--ink); }
+
+/* 바닥 */
+.foot {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  max-width: 1240px; width: 100%; margin: 0 auto; padding: 14px 32px 22px;
+  color: var(--muted); font-size: 12px; border-top: 1px solid var(--line);
+}
+.foot a { color: var(--brand); text-decoration: none; font-weight: 600; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px;
+  font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
