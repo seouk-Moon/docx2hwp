@@ -33,6 +33,7 @@ try:
 except ImportError:  # 같은 폴더가 아닌 곳에서 실행될 때
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from omml2hwpeq import OmmlConverter
+import omml2hwpeq as eqlearn
 
 __version__ = "1.0.0"
 
@@ -1081,7 +1082,8 @@ class Ctx(object):
 
 
 class Converter(object):
-    def __init__(self, docx_path, log=None):
+    def __init__(self, docx_path, log=None, eq_rules=None):
+        self.eq_rules = eq_rules or []
         self.dx = Docx(docx_path)
         self.reg = HeaderRegistry()
         self.log = log or (lambda *a: None)
@@ -1524,6 +1526,8 @@ class Converter(object):
         script, wem, aem, dem = conv.convert(omath)
         if not script:
             return None, 0, 0
+        if self.eq_rules:
+            script = eqlearn.apply(script, self.eq_rules)
         self.eq_count += 1
         self.eq_scripts.append(script)
         base = max(500, font_h)
@@ -2587,7 +2591,7 @@ class HangulApp(object):
 # ---------------------------------------------------------------------------
 # 실행
 # ---------------------------------------------------------------------------
-def convert_file(src, out=None, fmt="auto", engine="builtin", hangul=None, log=print):
+def convert_file(src, out=None, fmt="auto", engine="builtin", hangul=None, log=print, eq_rules=None):
     """하나의 docx 변환. fmt: hwpx | hwp | both | auto"""
     base = os.path.splitext(out or src)[0]
     want_hwp = fmt in ("hwp", "both") or (out and out.lower().endswith(".hwp"))
@@ -2611,7 +2615,7 @@ def convert_file(src, out=None, fmt="auto", engine="builtin", hangul=None, log=p
             results.append(hwpx_path)
         return results, warnings
 
-    conv = Converter(src)
+    conv = Converter(src, eq_rules=eq_rules)
     tmp_hwpx = hwpx_path if want_hwpx else base + ".__tmp__.hwpx"
     conv.build(tmp_hwpx)
     warnings = conv.warnings
@@ -2749,6 +2753,7 @@ def main(argv=None):
     ap.add_argument("--engine", choices=["builtin", "hangul"], default="builtin",
                     help="builtin: 이 프로그램의 변환기(기본) / hangul: 한글 프로그램의 docx 불러오기 사용")
     ap.add_argument("--gui", action="store_true", help="파일 선택 창으로 실행")
+    ap.add_argument("--rules", help="수식 교정 규칙 파일(.json, 웹 앱에서 내보낸 것)")
     ap.add_argument("-q", "--quiet", action="store_true")
     ap.add_argument("--version", action="version", version=__version__)
     # 콘솔 없는 창 앱(PyInstaller --windowed)에서 파일을 끌어다 놓은 경우
@@ -2791,6 +2796,7 @@ def main(argv=None):
             print("--engine hangul 은 Windows + 한컴오피스 한글 + pywin32 가 필요합니다.", file=sys.stderr)
             return 1
 
+    rules = eqlearn.load(args.rules) if args.rules else None
     ok = 0
     try:
         for f in files:
@@ -2804,7 +2810,7 @@ def main(argv=None):
             else:
                 fmt = args.format
             try:
-                res, warns = convert_file(f, out, fmt, args.engine, hangul)
+                res, warns = convert_file(f, out, fmt, args.engine, hangul, eq_rules=rules)
                 ok += 1
                 if not args.quiet:
                     for r in res:

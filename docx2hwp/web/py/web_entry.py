@@ -5,10 +5,12 @@ import os
 import zipfile
 
 import docx2hwp
+import omml2hwpeq as eqlearn
 
 
-def convert(src_path, out_path):
-    conv = docx2hwp.Converter(src_path)
+def convert(src_path, out_path, rules_json="[]"):
+    rules = json.loads(rules_json or "[]")
+    conv = docx2hwp.Converter(src_path, eq_rules=rules)
     conv.build(out_path)
     info = {
         "ok": True,
@@ -19,6 +21,24 @@ def convert(src_path, out_path):
         "size": os.path.getsize(out_path),
     }
     return json.dumps(info, ensure_ascii=False)
+
+
+def learn(before, after, rules_json="[]"):
+    """고친 수식 한 쌍을 배워 전체 규칙 목록과, 새로 생긴 규칙 설명을 돌려준다"""
+    old = json.loads(rules_json or "[]")
+    new = eqlearn.learn(before, after)
+    merged = eqlearn.merge(old, new)
+    return json.dumps({"rules": merged, "added": [eqlearn.describe(r) for r in new]},
+                      ensure_ascii=False)
+
+
+def describe(rules_json):
+    return json.dumps([eqlearn.describe(r) for r in json.loads(rules_json or "[]")],
+                      ensure_ascii=False)
+
+
+def preview(script, rules_json):
+    return eqlearn.apply(script, json.loads(rules_json or "[]"))
 
 
 def make_zip(pairs_json, out_path):

@@ -6,7 +6,12 @@ const els = {
   engine: $("engine"), engineText: $("engineText"), drop: $("drop"), picker: $("picker"),
   files: $("files"), empty: $("emptyRow"), count: $("count"), zipBtn: $("zipBtn"),
   clearBtn: $("clearBtn"), eqs: $("eqs"), eqFile: $("eqFile"), toast: $("toast"),
+  lBefore: $("lBefore"), lAfter: $("lAfter"), learnBtn: $("learnBtn"), learnMsg: $("learnMsg"),
+  rules: $("rules"), ruleCount: $("ruleCount"), reconvBtn: $("reconvBtn"),
+  exportBtn: $("exportBtn"), importInput: $("importInput"),
 };
+const RULES_KEY = "docx2hwp.rules.v1";
+let rules = loadRules();
 
 const PY_FILES = ["docx2hwp.py", "omml2hwpeq.py", "web_entry.py"];
 const WORK = "/home/pyodide/work";
@@ -31,6 +36,7 @@ async function boot() {
     py.runPython("import sys; sys.path.insert(0, '/home/pyodide/app')");
     entry = py.pyimport("web_entry");
     setEngine("ready", "준비됨 · 파일은 이 컴퓨터 밖으로 나가지 않습니다");
+    renderRules();
   } catch (e) {
     console.error(e);
     setEngine("error", "엔진을 불러오지 못했습니다 — 새로고침해 보세요");
@@ -67,7 +73,7 @@ function createRow(file) {
   li.querySelector(".size").textContent = fmtSize(file.size);
   els.empty.hidden = true;
   els.files.prepend(li);
-  const item = { id, name: file.name, outName, li, info: null, blob: null, outPath: null };
+  const item = { id, name: file.name, outName, li, info: null, blob: null, outPath: null, file };
   results.push(item);
   li.addEventListener("click", (ev) => {
     if (ev.target.closest("button")) return;
@@ -95,7 +101,7 @@ async function convertOne(file, item) {
     const out = `${WORK}/out_${item.id}.hwpx`;
     py.FS.writeFile(src, buf);
     await new Promise((r) => setTimeout(r, 20));      // 화면 갱신할 틈
-    const info = JSON.parse(entry.convert(src, out));
+    const info = JSON.parse(entry.convert(src, out, JSON.stringify(rules)));
     py.FS.unlink(src);
     const bytes = py.FS.readFile(out);
     item.outPath = out;
@@ -153,11 +159,19 @@ function select(item) {
   }
   eqs.forEach((s, i) => {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="no">${i + 1}</span><code></code><button class="btn small copy">복사</button>`;
+    li.innerHTML = `<span class="no">${i + 1}</span><code></code>
+      <span class="btns"><button class="btn small copy">복사</button><button class="btn small copy fix">고치기</button></span>`;
     li.querySelector("code").textContent = s;
-    li.querySelector("button").addEventListener("click", async () => {
+    li.querySelector(".copy").addEventListener("click", async () => {
       try { await navigator.clipboard.writeText(s); toast("수식을 복사했습니다"); }
       catch { toast("복사하지 못했습니다"); }
+    });
+    li.querySelector(".fix").addEventListener("click", () => {
+      els.lBefore.value = s;
+      els.lAfter.value = s;
+      els.learnMsg.textContent = "아래 칸을 한글에서 고친 모양으로 바꾼 뒤 '배우기'를 누르세요";
+      els.lAfter.focus();
+      els.lAfter.scrollIntoView({ behavior: "smooth", block: "center" });
     });
     els.eqs.appendChild(li);
   });
@@ -203,11 +217,85 @@ function clearAll() {
   refreshCounts();
 }
 
+/* ---------- 수식 교정 학습 ---------- */
+function loadRules() {
+  try { return JSON.parse(localStorage.getItem(RULES_KEY) || "[]"); } catch { return []; }
+}
+function saveRules() {
+  try { localStorage.setItem(RULES_KEY, JSON.stringify(rules)); } catch { /* 저장 불가 환경 */ }
+}
+function renderRules() {
+  els.rules.innerHTML = "";
+  els.ruleCount.textContent = rules.length ? `${rules.length}개` : "";
+  if (!rules.length) {
+    els.rules.innerHTML = `<li class="none">아직 없습니다. 수식 미리보기에서 '고치기'를 눌러 시작하세요.</li>`;
+    return;
+  }
+  const texts = entry ? JSON.parse(entry.describe(JSON.stringify(rules))) : rules.map((r) => r.type);
+  texts.forEach((t, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span></span><button class="btn small del" title="이 규칙 지우기">✕</button>`;
+    li.querySelector("span").textContent = t;
+    li.querySelector("button").addEventListener("click", () => {
+      rules.splice(i, 1);
+      saveRules();
+      renderRules();
+      toast("규칙을 지웠습니다");
+    });
+    els.rules.appendChild(li);
+  });
+}
+function learnOne() {
+  const before = els.lBefore.value.trim();
+  const after = els.lAfter.value.trim();
+  if (!entry) return toast("변환 엔진이 준비되면 다시 눌러 주세요");
+  if (!before || !after) return toast("두 칸을 모두 채워 주세요");
+  if (before === after) return toast("두 수식이 같습니다. 아래 칸을 고친 모양으로 바꿔 주세요");
+  const res = JSON.parse(entry.learn(before, after, JSON.stringify(rules)));
+  rules = res.rules;
+  saveRules();
+  renderRules();
+  els.learnMsg.textContent = `새 규칙 ${res.added.length}개를 배웠습니다. '다시 변환'을 누르면 바로 적용됩니다.`;
+  els.lBefore.value = "";
+  els.lAfter.value = "";
+  refreshCounts();
+}
+function reconvertAll() {
+  const files = results.map((r) => r.file).filter(Boolean).reverse();
+  if (!files.length) return;
+  clearAll();
+  addFiles(files);
+  toast("배운 규칙을 적용해 다시 변환합니다");
+}
+function exportRules() {
+  const blob = new Blob([JSON.stringify({ app: "docx2hwp", rules }, null, 2)], { type: "application/json" });
+  download(blob, "docx2hwp-수식규칙.json");
+}
+async function importRules(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    const incoming = Array.isArray(data) ? data : data.rules;
+    if (!Array.isArray(incoming)) throw new Error("형식이 맞지 않습니다");
+    rules = dedupe(rules.concat(incoming));
+    saveRules();
+    renderRules();
+    toast(`규칙 ${incoming.length}개를 불러왔습니다`);
+  } catch (e) {
+    toast("불러오지 못했습니다: " + e.message);
+  }
+}
+function dedupe(list) {
+  const seen = new Map();
+  for (const r of list) seen.set(JSON.stringify([r.type, r.from, r.left, r.right]), r);
+  return [...seen.values()];
+}
+
 function refreshCounts() {
   const done = results.filter((r) => r.blob).length;
   els.count.textContent = results.length ? `${done} / ${results.length}` : "";
   els.zipBtn.disabled = done === 0;
   els.clearBtn.disabled = results.length === 0;
+  els.reconvBtn.disabled = results.length === 0 || !rules.length;
 }
 
 /* ---------- 유틸 ---------- */
@@ -244,5 +332,13 @@ window.addEventListener("drop", (e) => {
 });
 els.zipBtn.addEventListener("click", zipAll);
 els.clearBtn.addEventListener("click", clearAll);
+els.learnBtn.addEventListener("click", learnOne);
+els.reconvBtn.addEventListener("click", reconvertAll);
+els.exportBtn.addEventListener("click", exportRules);
+els.importInput.addEventListener("change", () => {
+  if (els.importInput.files[0]) importRules(els.importInput.files[0]);
+  els.importInput.value = "";
+});
+renderRules();
 
 boot();

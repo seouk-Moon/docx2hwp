@@ -52,12 +52,38 @@
       </div>
       <ol class="eqs" id="eqs"></ol>
     </div>
+    <div class="panel" id="learnPanel">
+      <div class="panel-head">
+        <h2>수식 교정 학습</h2>
+        <span class="muted">한글에서 고친 수식을 넣으면 차이를 규칙으로 배워 다음 변환부터 자동으로 적용합니다.</span>
+      </div>
+      <label class="fld">변환기가 만든 수식
+        <textarea id="lBefore" rows="2" spellcheck="false" placeholder="수식 미리보기의 '고치기'를 누르면 자동으로 채워집니다"></textarea>
+      </label>
+      <label class="fld">한글에서 고친 수식
+        <textarea id="lAfter" rows="2" spellcheck="false" placeholder="한글 수식 편집기에서 스크립트를 복사(Ctrl+A, Ctrl+C)해 붙여 넣으세요"></textarea>
+      </label>
+      <div class="row">
+        <button class="btn primary small" id="learnBtn">배우기</button>
+        <span class="muted small-text" id="learnMsg"></span>
+      </div>
+      <div class="rules-head">
+        <h3>배운 규칙 <span class="muted" id="ruleCount"></span></h3>
+        <div class="row">
+          <button class="btn small ghost" id="reconvBtn" disabled title="지금 목록의 파일을 규칙을 적용해 다시 변환">다시 변환</button>
+          <button class="btn small ghost" id="exportBtn">내보내기</button>
+          <label class="btn small ghost">불러오기<input type="file" id="importInput" accept=".json,application/json" hidden></label>
+        </div>
+      </div>
+      <ul class="rules" id="rules"></ul>
+    </div>
     <div class="panel tips">
       <h2>알아두면 좋아요</h2>
       <ul>
         <li><b>파일은 서버로 올라가지 않습니다.</b> 변환은 전부 이 브라우저 안에서 이뤄집니다.</li>
         <li>결과는 <b>.hwpx</b>입니다. 한글 2014 이상, 한글 뷰어, 한컴독스에서 열립니다. .hwp가 필요하면 한글에서 열어 다른 이름으로 저장하세요.</li>
         <li>수식은 그림이 아니라 <b>편집 가능한 한글 수식</b>입니다. 한글에서 두 번 누르면 수식 편집기가 열립니다.</li>
+        <li>수식 교정 규칙은 이 브라우저에 저장됩니다. 다른 컴퓨터에서 쓰려면 <b>내보내기</b>로 저장해 두었다가 <b>불러오기</b> 하세요.</li>
         <li>처음 열 때 변환 엔진(약 10MB)을 내려받느라 몇 초 걸립니다. 그다음부터는 빠릅니다.</li>
       </ul>
     </div>

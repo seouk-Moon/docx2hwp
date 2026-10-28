@@ -32,32 +32,31 @@ def _ns(el):
 # 기호 표
 # ---------------------------------------------------------------------------
 GREEK = {
-    "∇": "TRIANGLED",
     "α": "alpha", "β": "beta", "γ": "gamma", "δ": "delta", "ε": "epsilon",
     "ϵ": "epsilon", "ζ": "zeta", "η": "eta", "θ": "theta", "ϑ": "vartheta",
     "ι": "iota", "κ": "kappa", "λ": "lambda", "μ": "mu", "ν": "nu", "ξ": "xi",
     "ο": "omicron", "π": "pi", "ϖ": "varpi", "ρ": "rho", "ϱ": "rho",
     "σ": "sigma", "ς": "varsigma", "τ": "tau", "υ": "upsilon", "φ": "phi",
     "ϕ": "varphi", "χ": "chi", "ψ": "psi", "ω": "omega",
-    "Α": "Alpha", "Β": "Beta", "Γ": "Gamma", "Δ": "Delta", "Ε": "Epsilon",
-    "Ζ": "Zeta", "Η": "Eta", "Θ": "Theta", "Ι": "Iota", "Κ": "Kappa",
-    "Λ": "Lambda", "Μ": "Mu", "Ν": "Nu", "Ξ": "Xi", "Ο": "Omicron", "Π": "Pi",
-    "Ρ": "Rho", "Σ": "Sigma", "Τ": "Tau", "Υ": "Upsilon", "Φ": "Phi",
-    "Χ": "Chi", "Ψ": "Psi", "Ω": "Omega",
+    "Α": "ALPHA", "Β": "BETA", "Γ": "GAMMA", "Δ": "DELTA", "Ε": "EPSILON",
+    "Ζ": "ZETA", "Η": "ETA", "Θ": "THETA", "Ι": "IOTA", "Κ": "KAPPA",
+    "Λ": "LAMBDA", "Μ": "MU", "Ν": "NU", "Ξ": "XI", "Ο": "OMICRON", "Π": "PI",
+    "Ρ": "RHO", "Σ": "SIGMA", "Τ": "TAU", "Υ": "UPSILON", "Φ": "PHI",
+    "Χ": "CHI", "Ψ": "PSI", "Ω": "OMEGA",
 }
 
 # 한글 수식 공식 문서(한글문서파일형식 수식 rev1.3)에 있는 명령어 위주
 SYMBOLS = {
-    "±": "PLUSMINUS", "∓": "MINUSPLUS", "×": "times", "÷": "DIV",
+    "±": "+-", "∓": "-+", "×": "times", "÷": "DIV",
     "·": "cdot", "⋅": "cdot", "∙": "BULLET", "∘": "CIRC", "°": "DEG",
-    "∗": "AST", "⋆": "STAR", "∩": "SMALLINTER", "∪": "SMALLUNION", "⊕": "OPLUS",
+    "∗": "AST", "⋆": "STAR", "∩": "CAP", "∪": "CUP", "⊕": "OPLUS",
     "⊖": "OMINUS", "⊗": "OTIMES", "⊙": "ODOT", "⊘": "OSLASH", "∨": "VEE",
     "∧": "WEDGE", "¬": "LNOT", "⊂": "SUBSET", "⊃": "SUPSET",
     "⊆": "SUBSETEQ", "⊇": "SUPSETEQ", "⊏": "SQSUBSET", "⊐": "SQSUPSET",
     "∈": "IN", "∋": "OWNS", "∉": "notin", "≤": "LEQ", "≦": "LEQ",
     "≥": "GEQ", "≧": "GEQ", "≪": "<<", "≫": ">>", "≺": "PREC", "≻": "SUCC",
-    "≠": "neq", "≐": "DOTEQ", "∼": "SIM", "≈": "APPROX", "≃": "SIMEQ",
-    "≅": "CONG", "≡": "==", "≍": "ASYMP", "∝": "PROPTO", "⋄": "DIAMOND",
+    "≠": "!=", "≐": "DOTEQ", "∼": "SIM", "≈": "APPROX", "≃": "SIMEQ",
+    "≅": "CONG", "≡": "EQUIV", "≍": "ASYMP", "∝": "PROPTO", "⋄": "DIAMOND",
     "∅": "EMPTYSET", "∴": "THEREFORE", "∵": "BECAUSE", "∃": "EXIST",
     "∀": "FORALL", "′": "prime", "″": "prime prime", "‴": "prime prime prime",
     "∂": "PARTIAL", "∞": "inf", "†": "DAGGER", "‡": "DDAGGER",
@@ -65,8 +64,8 @@ SYMBOLS = {
     "⊨": "MODELS", "ℵ": "ALEPH", "ℏ": "HBAR", "ı": "IMATH", "ȷ": "JMATH",
     "ℓ": "ELL", "℘": "WP", "ℑ": "IMAG", "Å": "ANGSTROM", "℃": "CENTIGRADE",
     "℉": "FAHRENHEIT",
-    "←": "larrow", "→": "rarrow", "↑": "uparrow", "↓": "downarrow",
-    "↕": "udarrow", "↔": "lrarrow", "↖": "nwarrow", "↘": "searrow",
+    "←": "<-", "→": "->", "↑": "uparrow", "↓": "downarrow",
+    "↕": "udarrow", "↔": "<->", "↖": "nwarrow", "↘": "searrow",
     "↗": "nearrow", "↙": "swarrow", "↩": "hookleft", "↪": "hookright",
     "↦": "mapsto", "⇐": "LARROW", "⇒": "RARROW", "⇑": "UPARROW",
     "⇓": "DOWNARROW", "⇕": "UDARROW", "⇔": "LRARROW", "⟵": "larrow",
@@ -748,3 +747,232 @@ def _is_word(s):
 def omml_to_hwp(omath):
     """편의 함수: <m:oMath> → (script, w_em, a_em, d_em)"""
     return OmmlConverter().convert(omath)
+
+
+# ===========================================================================
+# 수식 교정 학습 (사용자가 고친 수식에서 규칙을 배워 다음 변환에 적용)
+# ===========================================================================
+"""
+수식 교정 학습
+
+사용자가 "변환기가 만든 수식"과 "한글에서 고친 수식"을 한 쌍 주면, 둘의 차이를
+규칙으로 바꿔 두었다가 다음 변환부터 자동으로 적용한다.
+
+규칙 종류
+  exact : 수식 전체가 똑같으면 고친 수식을 그대로 쓴다 (띄어쓰기까지 그대로)
+  token : 바뀐 부분만 바꾼다
+          - 기호·명령어만 바뀐 경우 (예: -> → rarrow): 모든 수식에 적용
+          - 변수·숫자가 섞인 경우: 앞뒤 한 토큰이 같을 때만 적용 (엉뚱한 곳 방지)
+  space : 토큰은 같고 띄어쓰기만 다르면, 그 띄어쓰기 습관을 기억한다
+          (예: "a+b" 를 "a + b" 로 고치면 + 앞뒤를 띄움)
+
+규칙은 JSON 목록으로 주고받는다. 표준 라이브러리만 사용.
+"""
+import difflib  # noqa: E402
+import json  # noqa: E402
+
+START, END = "<시작>", "<끝>"
+_TOK = re.compile(r'"[^"]*"|[{}]|[A-Za-z]+|[0-9.]+|[+\-=<>!]+|\S')
+
+
+def tokens(script):
+    return _TOK.findall(script or "")
+
+
+def _norm(script):
+    return " ".join(tokens(script))
+
+
+# 한컴 수식 문서의 명령어·기호 이름 (사용자가 고칠 때 쓸 만한 것들)
+KEYWORDS = {k.lower() for k in """
+PLUSMINUS MINUSPLUS times DIV DIVIDE CIRC BULLET DEG AST STAR BIGCIRC EMPTYSET THEREFORE
+BECAUSE IDENTICAL EXIST neq DOTEQ image REIMAGE SIM APPROX SIMEQ CONG EQUIV ASYMP ISO
+DIAMOND DSUM FORALL prime PARTIAL inf LNOT PROPTO XOR TRIANGLED DAGGER DDAGGER larrow
+rarrow uparrow downarrow LARROW RARROW UPARROW DOWNARROW udarrow lrarrow UDARROW LRARROW
+nwarrow searrow nearrow swarrow hookleft hookright mapsto vert VERT cdots LDOTS VDOTS DDOTS
+TRIANGLE ANGLE MSANGLE SANGLE RTANGLE VDASH HLEFT BOT TOP MODELS LAPLACE CENTIGRADE
+FAHRENHEIT LSLANT RSLANT att hund thou well base benzene INTER CAP SQCAP SQCUP OPLUS
+OMINUS OTIMES ODOT OSLASH VEE WEDGE SUBSET SUPSET SUBSETEQ SUPSETEQ IN OWNS notin LEQ GEQ
+SQSUBSET SQSUPSET SQSUBSETEQ SQSUPSETEQ LLL PREC SUCC UPLUS PROD COPROD UNION SMALLUNION
+SMALLINTER SUM INT OINT DINT TINT ODINT OTINT ALEPH HBAR IMATH JMATH OHM ELL LITER WP IMAG
+ANGSTROM vartheta varpi varsigma varupsilon varphi varepsilon OVER ATOP SQRT ROOT OF SUP SUB
+LSUB LSUP BIGG CASES PILE LPILE RPILE EQALIGN CHOOSE BINOM MATRIX PMATRIX BMATRIX DMATRIX
+HAT CHECK TILDE ACUTE GRAVE DOT DDOT BAR VEC DYAD UNDER ARCH LEFT RIGHT FROM TO REL BUILDREL
+NOT SCALE COLOR rm it bold cdot le ge ne leq geq
+""".split()} | RESERVED
+
+
+def _is_var(tok):
+    """변수 이름·숫자 (규칙을 전체에 적용하면 위험한 토큰)"""
+    if tok[0].isdigit():
+        return True
+    return tok.isalpha() and tok.lower() not in KEYWORDS
+
+
+def _gaps(script):
+    """토큰 사이 공백 여부 목록 (토큰 i 와 i+1 사이)"""
+    toks = list(_TOK.finditer(script))
+    return [toks[i + 1].start() > toks[i].end() for i in range(len(toks) - 1)]
+
+
+def learn(before, after):
+    """(변환 결과, 한글에서 고친 결과) → 규칙 목록"""
+    before = (before or "").strip()
+    after = (after or "").strip()
+    if not before or not after or before == after:
+        return []
+    rules = [{"type": "exact", "from": _norm(before), "to": after, "show": before}]
+    ta, tb = tokens(before), tokens(after)
+    if ta == tb:
+        # 띄어쓰기만 다름 → 어떤 토큰 앞뒤를 띄우는지/붙이는지 배운다
+        ga, gb = _gaps(before), _gaps(after)
+        seen = set()
+        for i, (x, y) in enumerate(zip(ga, gb)):
+            if x != y:
+                key = (_cls(ta[i]), _cls(ta[i + 1]))
+                # 연산자 쪽만 기억 (a + b 를 배우면 x + 1 에도 적용)
+                if _is_op(key[1]) and not _is_op(key[0]) and key[0] != "{":
+                    key = ("*", key[1])
+                elif _is_op(key[0]) and not _is_op(key[1]) and key[1] != "}":
+                    key = (key[0], "*")
+                if key in seen:
+                    continue
+                seen.add(key)
+                rules.append({"type": "space", "left": key[0], "right": key[1], "space": y})
+        return rules
+    sm = difflib.SequenceMatcher(a=ta, b=tb, autojunk=False)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            continue
+        frm, to = ta[i1:i2], tb[j1:j2]
+        general = tag == "replace" and frm and not any(_is_var(t) for t in frm) \
+            and not any(_is_var(t) for t in to)
+        if general:
+            rules.append({"type": "token", "from": frm, "to": to})
+        else:
+            left = ta[i1 - 1] if i1 > 0 else START
+            right = ta[i2] if i2 < len(ta) else END
+            rules.append({"type": "token", "from": frm, "to": to,
+                          "left": left, "right": right})
+    return rules
+
+
+def _is_op(c):
+    return bool(re.match(r"^[+\-=<>!,/|*]+$", c or ""))
+
+
+def _cls(tok):
+    """띄어쓰기 규칙에 쓰는 토큰 분류: 기호는 그대로, 나머지는 종류로"""
+    if tok in ("{", "}"):
+        return tok
+    if re.match(r"^[+\-=<>!]+$", tok) or len(tok) == 1 and not tok.isalnum():
+        return tok
+    if tok.startswith('"'):
+        return "TEXT"
+    if tok[0].isdigit():
+        return "NUM"
+    if len(tok) > 1 and tok.lower() in KEYWORDS:
+        return tok          # 명령어는 이름 그대로 (over, LEFT …)
+    return "VAR"
+
+
+def apply(script, rules):
+    """규칙을 수식 하나에 적용"""
+    if not rules:
+        return script
+    key = _norm(script)
+    for r in rules:
+        if r.get("type") == "exact" and r.get("from") == key:
+            return r["to"]
+    toks = tokens(script)
+    changed = False
+    for r in rules:
+        if r.get("type") != "token":
+            continue
+        frm, to = r.get("from") or [], r.get("to") or []
+        left, right = r.get("left"), r.get("right")
+        out = []
+        n = len(toks)
+        m = len(frm)
+        if m:
+            i = 0
+            while i < n:
+                prev = out[-1] if out else START
+                nxt = toks[i + m] if i + m < n else END
+                if toks[i:i + m] == frm and (left is None or prev == left) \
+                        and (right is None or nxt == right):
+                    out.extend(to)
+                    i += m
+                    changed = True
+                    continue
+                out.append(toks[i])
+                i += 1
+        else:
+            for i in range(n + 1):
+                prev = toks[i - 1] if i > 0 else START
+                nxt = toks[i] if i < n else END
+                if prev == left and nxt == right:
+                    out.extend(to)
+                    changed = True
+                if i < n:
+                    out.append(toks[i])
+        toks = out
+    result = tidy(" ".join(toks)) if changed else script
+    spaces = [r for r in rules if r.get("type") == "space"]
+    if spaces:
+        result = _apply_spaces(result, spaces)
+    return result
+
+
+def _apply_spaces(script, rules):
+    want = {(r["left"], r["right"]): r["space"] for r in rules}
+    toks = tokens(script)
+    if not toks:
+        return script
+    gaps = _gaps(script)
+    out = toks[0]
+    for i in range(1, len(toks)):
+        sp = gaps[i - 1]
+        a, b = _cls(toks[i - 1]), _cls(toks[i])
+        for k in ((a, b), ("*", b), (a, "*")):
+            if k in want and not (k[0] == "*" and a == "{") and not (k[1] == "*" and b == "}"):
+                sp = want[k]
+                break
+        out += (" " if sp else "") + toks[i]
+    return out
+
+
+def describe(rule):
+    """사람이 읽을 수 있는 규칙 설명"""
+    t = rule.get("type")
+    if t == "exact":
+        return "수식 전체: %s  →  %s" % (rule.get("show", rule["from"]), rule["to"])
+    if t == "space":
+        return "띄어쓰기: '%s' 와 '%s' 사이를 %s" % (
+            rule["left"], rule["right"], "띄움" if rule["space"] else "붙임")
+    frm = " ".join(rule.get("from") or []) or "(없음)"
+    to = " ".join(rule.get("to") or []) or "(지움)"
+    ctx = ""
+    if rule.get("left") is not None:
+        ctx = "  (앞: %s, 뒤: %s 일 때만)" % (rule.get("left"), rule.get("right"))
+    return "바꾸기: %s  →  %s%s" % (frm, to, ctx)
+
+
+def merge(rules, new):
+    """중복 없이 합치기 (새 규칙이 같은 대상을 덮어씀)"""
+    def key(r):
+        if r.get("type") == "exact":
+            return ("exact", r["from"])
+        if r.get("type") == "space":
+            return ("space", r["left"], r["right"])
+        return ("token", tuple(r.get("from") or []), r.get("left"), r.get("right"))
+    d = {key(r): r for r in rules}
+    for r in new:
+        d[key(r)] = r
+    return list(d.values())
+
+
+def load(path):
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("rules", data) if isinstance(data, dict) else data
